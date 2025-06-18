@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { lowercase, toLowerCase, trim } from "zod/v4";
 import { AvailableRoles, UserRoleEnum } from "../utils/constants";
 
 const userChema = mongoose.Schema(
@@ -20,6 +19,7 @@ const userChema = mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      select: false, // don't return password
     },
     username: {
       type: String,
@@ -29,8 +29,8 @@ const userChema = mongoose.Schema(
     },
     avatar: {
       type: {
-        url: string,
-        localPath: string,
+        url: String,
+        localPath: String,
       },
       default: {
         url: `https://placehold.co/600x400`,
@@ -43,18 +43,16 @@ const userChema = mongoose.Schema(
       default: UserRoleEnum.USER,
     },
     api_key: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "APIKey",
     },
-    resetPasswordToken: {
-      type: String,
-    },
-    resetPasswordExpire: {
-      type: Date,
-    },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+
     isDeleted: {
       type: Boolean,
       default: false,
+      select: false, // don't return isDeleted
     },
   },
   {

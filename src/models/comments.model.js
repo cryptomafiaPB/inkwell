@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { trim } from "zod/v4";
 
 const repliesSchema = mongoose.Schema({
   content: {

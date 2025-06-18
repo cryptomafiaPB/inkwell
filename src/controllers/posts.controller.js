@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // Create a blog post (default status: “pending”)
 const createPost = (req, res) => {};
 
@@ -8,9 +9,19 @@ const getAllPosts = (req, res) => {};
 const getPostById = (req, res) => {};
 
 // Edit a post (only by author, if not approved)
-const updatePostById = (req, res) => {};
+const updateAutherPostById = (req, res) => {};
 
 // Delete a post (only by author, if not approved)
 const deletePostById = (req, res) => {};
 
-export { createPost, getAllPosts, getPostById, updatePostById, deletePostById };
+// Get featured posts
+const getFeaturedPosts = (req, res) => {};
+
+export {
+  createPost,
+  getAllPosts,
+  getPostById,
+  updateAutherPostById,
+  deletePostById,
+  getFeaturedPosts,
+};

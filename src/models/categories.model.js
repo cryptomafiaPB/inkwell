@@ -1,7 +1,4 @@
 import mongoose from "mongoose";
-import { trim, union } from "zod/v4";
-import { required } from "zod/v4-mini";
-import { de } from "zod/v4/locales";
 
 const categorySchema = mongoose.Schema(
   {

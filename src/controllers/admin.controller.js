@@ -3,7 +3,7 @@
 import PostReview from "../models/post_reviews.model.js";
 import Post from "../models/posts.model.js";
 import { ApiError } from "../utils/api-error.js";
-import { ApiResponce } from "../utils/api-responce";
+import { ApiResponce } from "../utils/api-responce.js";
 import { postReviewStatusEnum, PostStatusEnum } from "../utils/constants.js";
 
 // List all pending posts

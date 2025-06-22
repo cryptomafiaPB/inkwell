@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { AvailablePostReviewStatus } from "../utils/constants";
+import { AvailablePostReviewStatus } from "../utils/constants.js";
 
 const postReviewSchema = mongoose.Schema({
   content: {

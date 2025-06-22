@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   getAllPendingPosts,
   updateAdminPostById,
-} from "../controllers/admin.controller";
+} from "../controllers/admin.controller.js";
 
 const router = Router();
 

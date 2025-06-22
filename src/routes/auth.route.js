@@ -1,28 +1,31 @@
 import { Router } from "express";
 import {
-  forgotPassword,
+  // forgotPassword,
   generateAPIKey,
   getMe,
   loginUser,
   logoutUser,
   registerUser,
-  resetPassword,
-} from "../controllers/auth.controller";
+  // resetPassword,
+} from "../controllers/auth.controller.js";
+import { authenticate } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-// Auth routes
-router.route("register").post(registerUser); // IMP
-router.route("login").post(loginUser); // IMP
-router.route("logout").post(logoutUser);
-router.route("forgot-password").post(forgotPassword);
-router.route("reset-password").post(resetPassword);
+// Public routes
+router.route("/register").post(registerUser); // IMP
+router.route("/login").post(loginUser); // IMP
 
+// implement forgot-password and reset-password in future if needed
+// router.route("/forgot-password").post(forgotPassword);
+// router.route("/reset-password").post(resetPassword);
+
+// Protected routes
+router.route("/logout").post(authenticate, logoutUser);
 // API key routes
-router.route("api-key").post(generateAPIKey); // IMP
-
+router.route("/api-key").get(authenticate[0], generateAPIKey); // IMP
 // User routes
-router.route("me").get(getMe); // IMP
+router.route("/me").get(authenticate, getMe); // IMP
 
 // manual DB update for admin role.
 

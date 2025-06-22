@@ -3,7 +3,7 @@ export const UserRoleEnum = {
   USER: "user",
 };
 
-export const AvailableRoles = Object.values(ROLE);
+export const AvailableRoles = Object.values(UserRoleEnum);
 
 export const PostStatusEnum = {
   PENDING: "pending",
@@ -11,7 +11,7 @@ export const PostStatusEnum = {
   REJECTED: "rejected",
 };
 
-export const AvailablePostStatus = Object.values(StatusEnum);
+export const AvailablePostStatus = Object.values(PostStatusEnum);
 
 export const postReviewStatusEnum = {
   APPROVED: "approved",

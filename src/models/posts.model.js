@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { AvailablePostStatus, PostStatusEnum } from "../utils/constants";
+import { AvailablePostStatus, PostStatusEnum } from "../utils/constants.js";
 
 const postSchema = mongoose.Schema(
   {

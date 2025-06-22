@@ -5,11 +5,11 @@ import {
   getAllPosts,
   getPostById,
   updateAutherPostById,
-} from "../controllers/posts.controller";
+} from "../controllers/posts.controller.js";
 import {
   addCommentById,
   getCommentsById,
-} from "../controllers/comments.controller";
+} from "../controllers/comments.controller.js";
 
 const router = Router();
 

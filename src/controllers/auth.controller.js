@@ -1,17 +1,185 @@
 /* eslint-disable no-unused-vars */
-const registerUser = (req, res) => {};
 
-const loginUser = (req, res) => {};
+import { z } from "zod/v4";
+import { ApiError } from "../utils/api-error.js";
+import User from "../models/users.model.js";
+import { ApiResponce } from "../utils/api-responce.js";
+import cookieParser from "cookie-parser";
+import { AvailableRoles } from "../utils/constants.js";
+import APIKey from "../models/api_keys.model.js";
+import crypto from "crypto";
 
-const logoutUser = (req, res) => {};
+const registerSchema = z.object({
+  email: z.email(),
+  password: z.string().min(6).max(30),
+  username: z.string().min(3).max(30),
+  fullname: z.string().min(3).max(50),
+});
 
+const loginSchema = z.object({
+  email: z.email(),
+  password: z.string().min(6).max(30),
+});
+
+const reqUserSchema = z.object({
+  id: z.string(),
+  role: z.enum(AvailableRoles),
+});
+
+const unselectedUserFields = "-password -api_keys -createdAt -updatedAt -__v";
+
+const registerUser = async (req, res) => {
+  try {
+    const { email, password, username, fullname } = registerSchema.parse(
+      req.body
+    );
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(409).json(new ApiError(400, "Email already exists"));
+    }
+
+    const user = await User.create({
+      email,
+      password,
+      username,
+      fullname,
+    });
+
+    const userWithoutSensitiveData = {
+      ...user.toObject(),
+      password: undefined,
+      api_keys: undefined,
+    };
+
+    return res
+      .status(201)
+      .json(
+        new ApiResponce(
+          201,
+          { user: userWithoutSensitiveData },
+          "Account created successfully"
+        )
+      );
+  } catch (error) {
+    console.log("error in register: ", error);
+    return res.status(400).json(new ApiError(400, error.message));
+  }
+};
+
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = loginSchema.parse(req.body);
+
+    const user = await User.findOne({ email });
+    // if user not found
+    if (!user) {
+      return res.status(404).json(new ApiError(404, "Invalid email"));
+    }
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      return res.status(401).json(new ApiError(401, "Invalid credentials"));
+    }
+
+    const token = user.generateAuthToken();
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: false, // in Production set to true
+      sameSite: "lax", // helps with CSRF and cross-site sending, set "strict" for additional security
+      maxAge: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    };
+    // remove password and api_keys from user object
+    const userWithoutSensitiveData = {
+      ...user.toObject(),
+      password: undefined,
+      api_keys: undefined,
+    };
+
+    return res
+      .cookie("id", token, cookieOptions)
+      .status(200)
+      .json(
+        new ApiResponce(
+          200,
+          { user: userWithoutSensitiveData, token },
+          "Login successful"
+        )
+      );
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(new ApiError(400, { message: error.message }));
+  }
+};
+
+const logoutUser = (req, res) => {
+  res.clearCookie("id");
+  return res.status(200).json(new ApiResponce(200, {}, "Logout successful"));
+};
+
+// Implement forgotPassword and resetPassword in future if needed
 const forgotPassword = (req, res) => {};
 
 const resetPassword = (req, res) => {};
 
-const generateAPIKey = (req, res) => {};
+const generateAPIKey = async (req, res) => {
+  try {
+    //  verify user is exists
+    const { id, role } = reqUserSchema.parse(req.user);
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json(new ApiError(404, "User not found"));
+    }
+    // generate API key
+    const key = await crypto.randomBytes(32).toString("hex");
+    // save
+    const apiKey = await APIKey.create({
+      api_keys: key,
+      user: user._id,
+    });
 
-const getMe = (req, res) => {};
+    if (!apiKey) {
+      return res
+        .status(500)
+        .json(new ApiError(500, "Failed to generate API key"));
+    }
+
+    // Update user with API key reference
+    await User.findByIdAndUpdate(user._id, {
+      api_keys: apiKey._id,
+    });
+
+    return res
+      .status(201)
+      .json(
+        new ApiResponce(
+          201,
+          { key: apiKey.api_keys },
+          "API key generated successfully"
+        )
+      );
+  } catch (error) {
+    console.log("API key generation failed:", error);
+    return res.status(400).json(new ApiError(400, { message: error.message }));
+  }
+};
+
+const getMe = async (req, res) => {
+  try {
+    console.log("getMe called ", req.user);
+    const { id } = req.user;
+    // dont include password and api_keys in response
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json(new ApiError(404, "User not found"));
+    }
+    return res.status(200).json(new ApiResponce(200, user));
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(new ApiError(400, { message: error.message }));
+  }
+};
 
 export {
   registerUser,

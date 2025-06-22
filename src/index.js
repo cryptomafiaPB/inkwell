@@ -14,13 +14,20 @@ import {
   addCategory,
   getAllCategories,
 } from "./controllers/category.controller.js";
+import { healthCheck } from "./controllers/healthCheck.controller.js";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 
 // eslint-disable-next-line no-undef
 const port = process.env.PORT || 5000;
 
+// loade env
+dotenv.config({ path: ".env" });
+
 // common middlewares
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // database connection
@@ -40,6 +47,9 @@ app.route("/api/v1/posts/featured").get(getFeaturedPosts);
 // category routes
 app.route("/api/v1/categories").get(getAllCategories); // list all categories
 app.route("/api/v1/categories").post(addCategory); // add a new category
+
+// Health check
+app.get("/api/v1/health-check", healthCheck);
 
 app.listen(port, () => {
   console.log(`🚀 Server is running on port ${port}`);

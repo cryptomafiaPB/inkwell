@@ -45,8 +45,8 @@ const userSchema = mongoose.Schema(
       enum: AvailableRoles,
       default: UserRoleEnum.USER,
     },
-    api_key: {
-      type: mongoose.Schema.Types.ObjectId,
+    api_keys: {
+      type: [mongoose.Schema.Types.ObjectId],
       ref: "APIKey",
     },
     resetPasswordToken: String,

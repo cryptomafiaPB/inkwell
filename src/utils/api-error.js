@@ -1,5 +1,6 @@
 class ApiError extends Error {
   constructor(statusCode, message, error = [], stack = "") {
+    console.error("ApiError: ", message);
     super(message);
     this.statusCode = statusCode;
     this.message = message;

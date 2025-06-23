@@ -13,17 +13,14 @@ import { authenticate } from "../middlewares/auth.middleware.js";
 const router = Router();
 
 // Public routes
+
 router.route("/register").post(registerUser); // IMP
 router.route("/login").post(loginUser); // IMP
-
-// implement forgot-password and reset-password in future if needed
-// router.route("/forgot-password").post(forgotPassword);
-// router.route("/reset-password").post(resetPassword);
 
 // Protected routes
 router.route("/logout").post(authenticate, logoutUser);
 // API key routes
-router.route("/api-key").get(authenticate[0], generateAPIKey); // IMP
+router.route("/api-key").get(authenticate[0], generateAPIKey); // IMP only check JWT
 // User routes
 router.route("/me").get(authenticate, getMe); // IMP
 

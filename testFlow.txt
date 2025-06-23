@@ -1,0 +1,9 @@
+inkWell testing workflow
+
+1 - register
+2 - login
+3- generate api-key
+4 - create-category
+5 - get All category
+6 - create post
+7 - 

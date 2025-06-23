@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import mongoose from "mongoose";
 const dbConnect = async () => {

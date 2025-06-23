@@ -3,40 +3,28 @@
 import { z } from "zod/v4";
 import { ApiError } from "../utils/api-error.js";
 import User from "../models/users.model.js";
-import { ApiResponce } from "../utils/api-responce.js";
+import { ApiResponse } from "../utils/api-responce.js";
 import cookieParser from "cookie-parser";
 import { AvailableRoles } from "../utils/constants.js";
 import APIKey from "../models/api_keys.model.js";
 import crypto from "crypto";
-
-const registerSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6).max(30),
-  username: z.string().min(3).max(30),
-  fullname: z.string().min(3).max(50),
-});
-
-const loginSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6).max(30),
-});
-
-const reqUserSchema = z.object({
-  id: z.string(),
-  role: z.enum(AvailableRoles),
-});
+import {
+  loginSchema,
+  registerSchema,
+  reqUserSchema,
+} from "../validators/authSchema.js";
 
 const unselectedUserFields = "-password -api_keys -createdAt -updatedAt -__v";
 
 const registerUser = async (req, res) => {
   try {
-    const { email, password, username, fullname } = registerSchema.parse(
+    const { email, password, username, fullname, role } = registerSchema.parse(
       req.body
     );
 
     const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(409).json(new ApiError(400, "Email already exists"));
+      throw new ApiError(400, "Email already exists");
     }
 
     const user = await User.create({
@@ -44,6 +32,7 @@ const registerUser = async (req, res) => {
       password,
       username,
       fullname,
+      role,
     });
 
     const userWithoutSensitiveData = {
@@ -55,7 +44,7 @@ const registerUser = async (req, res) => {
     return res
       .status(201)
       .json(
-        new ApiResponce(
+        new ApiResponse(
           201,
           { user: userWithoutSensitiveData },
           "Account created successfully"
@@ -63,7 +52,7 @@ const registerUser = async (req, res) => {
       );
   } catch (error) {
     console.log("error in register: ", error);
-    return res.status(400).json(new ApiError(400, error.message));
+    throw new ApiError(400, error.message);
   }
 };
 
@@ -74,12 +63,12 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     // if user not found
     if (!user) {
-      return res.status(404).json(new ApiError(404, "Invalid email"));
+      throw new ApiError(404, "Invalid email");
     }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return res.status(401).json(new ApiError(401, "Invalid credentials"));
+      throw new ApiError(401, "Invalid credentials");
     }
 
     const token = user.generateAuthToken();
@@ -101,7 +90,7 @@ const loginUser = async (req, res) => {
       .cookie("id", token, cookieOptions)
       .status(200)
       .json(
-        new ApiResponce(
+        new ApiResponse(
           200,
           { user: userWithoutSensitiveData, token },
           "Login successful"
@@ -109,13 +98,13 @@ const loginUser = async (req, res) => {
       );
   } catch (error) {
     console.log(error);
-    return res.status(400).json(new ApiError(400, { message: error.message }));
+    throw new ApiError(400, { message: error.message });
   }
 };
 
 const logoutUser = (req, res) => {
   res.clearCookie("id");
-  return res.status(200).json(new ApiResponce(200, {}, "Logout successful"));
+  return res.status(200).json(new ApiResponse(200, {}, "Logout successful"));
 };
 
 // Implement forgotPassword and resetPassword in future if needed
@@ -129,7 +118,7 @@ const generateAPIKey = async (req, res) => {
     const { id, role } = reqUserSchema.parse(req.user);
     const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json(new ApiError(404, "User not found"));
+      throw new ApiError(404, "User not found");
     }
     // generate API key
     const key = await crypto.randomBytes(32).toString("hex");
@@ -140,20 +129,18 @@ const generateAPIKey = async (req, res) => {
     });
 
     if (!apiKey) {
-      return res
-        .status(500)
-        .json(new ApiError(500, "Failed to generate API key"));
+      throw new ApiError(500, "Failed to generate API key");
     }
 
     // Update user with API key reference
     await User.findByIdAndUpdate(user._id, {
-      api_keys: apiKey._id,
+      $push: { api_keys: apiKey._id },
     });
 
     return res
       .status(201)
       .json(
-        new ApiResponce(
+        new ApiResponse(
           201,
           { key: apiKey.api_keys },
           "API key generated successfully"
@@ -161,7 +148,7 @@ const generateAPIKey = async (req, res) => {
       );
   } catch (error) {
     console.log("API key generation failed:", error);
-    return res.status(400).json(new ApiError(400, { message: error.message }));
+    throw new ApiError(400, { message: error.message });
   }
 };
 
@@ -172,12 +159,12 @@ const getMe = async (req, res) => {
     // dont include password and api_keys in response
     const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json(new ApiError(404, "User not found"));
+      throw new ApiError(404, "User not found");
     }
-    return res.status(200).json(new ApiResponce(200, user));
+    return res.status(200).json(new ApiResponse(200, user));
   } catch (error) {
     console.log(error);
-    return res.status(400).json(new ApiError(400, { message: error.message }));
+    throw new ApiError(400, { message: error.message });
   }
 };
 

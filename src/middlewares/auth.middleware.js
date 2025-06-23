@@ -11,7 +11,7 @@ const authenticateJWT = (req, res, next) => {
   const token =
     req.headers.authorization?.replace("Bearer ", "") ?? req.cookies?.id;
   if (!token || token === "null") {
-    return res.status(401).json(new ApiError(401, "Unauthorized"));
+    throw new ApiError(401, "Unauthorized");
   }
   // verify token
   try {
@@ -22,7 +22,7 @@ const authenticateJWT = (req, res, next) => {
     req.user = { id: payload.id, role: payload.role };
   } catch (error) {
     // Invalid token -> reject immediately
-    return res.status(401).json(new ApiError(401, "Invalid or Expired token"));
+    throw new ApiError(401, "Invalid or Expired token");
   }
   // next()
   next();
@@ -30,9 +30,9 @@ const authenticateJWT = (req, res, next) => {
 const authenticateAPI = async (req, res, next) => {
   // get API key from request header [x-api-key]
   const key = req.headers["x-api-key"];
-
+  console.log("API Key: ", key);
   if (!key) {
-    return res.status(401).json(new ApiError(401, "Unauthorized"));
+    throw new ApiError(401, "Invalid or Missing API Key");
   }
   //   query DB 'api_keys' model and findOne {apikey, revoked: false}. Then populate user
   try {
@@ -44,7 +44,7 @@ const authenticateAPI = async (req, res, next) => {
     req.user = { id: user.user._id.toString(), role: user.user.role };
   } catch (error) {
     // Invalid API key -> reject immediately
-    return res.status(401).json(new ApiError(401, "Invalid or Revoked Key"));
+    throw new ApiError(401, "Invalid or Revoked Key");
   }
   // next()
   next();

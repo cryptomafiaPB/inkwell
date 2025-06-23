@@ -6,6 +6,11 @@ const postReviewSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  admin: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   post: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Post",
@@ -14,6 +19,7 @@ const postReviewSchema = mongoose.Schema({
   action: {
     type: String,
     enum: AvailablePostReviewStatus,
+    required: true,
   },
   isDeleted: {
     type: Boolean,

@@ -165,7 +165,7 @@ Visualize the data models, controllers, and middleware flow in detail on Eraser.
 | POST   | `/api/v1/admin/posts/:id/approve` | Approve a post               |
 | POST   | `/api/v1/admin/posts/:id/reject`  | Reject a post (with comment) |
 | POST   | `/api/v1/categories`              | Create a new category        |
-| GET    | `/api/v1/categories`              | List all categories          |
+| GET    | `/api/v1/categories`              | List all categories (Public) |
 
 ### Utility
 

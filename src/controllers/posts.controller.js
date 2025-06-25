@@ -41,7 +41,7 @@ const createPost = async (req, res) => {
       .json(new ApiResponse(201, newPost, "Post created successfully"));
   } catch (error) {
     console.error("Error creating post:", error);
-    throw new ApiError(500, "Internal Server Error");
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 
@@ -59,7 +59,7 @@ const getAllPosts = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { posts }));
   } catch (error) {
     console.log("getAllPosts error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 
@@ -143,7 +143,7 @@ const updateAutherPostById = async (req, res) => {
       .json(new ApiResponse(200, { post }, "post successfully updated!"));
   } catch (error) {
     console.log("updateAutherPostById error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 
@@ -181,7 +181,7 @@ const deletePostById = async (req, res) => {
     throw new ApiResponse(200, "post successfully deleted!");
   } catch (error) {
     console.log("deletePostById error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 
@@ -198,7 +198,7 @@ const getFeaturedPosts = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { posts }));
   } catch (error) {
     console.log("getFeaturedPosts error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 

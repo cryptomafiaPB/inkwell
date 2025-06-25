@@ -22,7 +22,7 @@ const getAllPendingPosts = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { posts }));
   } catch (error) {
     console.log("getAllPendingPosts error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 // based on /approve or /reject endpoint, update a post status
@@ -93,7 +93,7 @@ const updateAdminPostById = async (req, res) => {
       );
   } catch (error) {
     console.log("updateAdminPostById error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 

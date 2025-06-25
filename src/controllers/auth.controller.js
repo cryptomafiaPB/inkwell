@@ -3,8 +3,6 @@
 import { ApiError } from "../utils/api-error.js";
 import User from "../models/users.model.js";
 import { ApiResponse } from "../utils/api-responce.js";
-import cookieParser from "cookie-parser";
-import { AvailableRoles } from "../utils/constants.js";
 import APIKey from "../models/api_keys.model.js";
 import crypto from "crypto";
 import {
@@ -51,7 +49,7 @@ const registerUser = async (req, res) => {
       );
   } catch (error) {
     console.log("error in register: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 
@@ -97,13 +95,18 @@ const loginUser = async (req, res) => {
       );
   } catch (error) {
     console.log(error);
-    throw new ApiError(400, { message: error.message });
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 
 const logoutUser = (req, res) => {
-  res.clearCookie("id");
-  return res.status(200).json(new ApiResponse(200, {}, "Logout successful"));
+  try {
+    res.clearCookie("id");
+    return res.status(200).json(new ApiResponse(200, {}, "Logout successful"));
+  } catch (error) {
+    console.log("Logout error: ", error);
+    throw new ApiError(500, "Logout failed");
+  }
 };
 
 const generateAPIKey = async (req, res) => {
@@ -142,7 +145,7 @@ const generateAPIKey = async (req, res) => {
       );
   } catch (error) {
     console.log("API key generation failed:", error);
-    throw new ApiError(400, { message: error.message });
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 
@@ -154,10 +157,23 @@ const getMe = async (req, res) => {
     if (!user) {
       throw new ApiError(404, "User not found");
     }
-    return res.status(200).json(new ApiResponse(200, user));
+    const userWithoutSensitiveData = {
+      ...user.toObject(),
+      password: undefined,
+      api_keys: undefined,
+    };
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          userWithoutSensitiveData,
+          "User data retrieved successfully"
+        )
+      );
   } catch (error) {
     console.log(error);
-    throw new ApiError(400, { message: error.message });
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 

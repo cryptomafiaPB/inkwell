@@ -10,6 +10,7 @@ const authenticateJWT = (req, res, next) => {
   // get JWT token from request header bearer token
   const token =
     req.headers.authorization?.replace("Bearer ", "") ?? req.cookies?.id;
+  console.log("JWT Token: ", token);
   if (!token || token === "null") {
     throw new ApiError(401, "Unauthorized");
   }

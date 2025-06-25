@@ -42,7 +42,7 @@ const addCategory = async (req, res) => {
       .json(new ApiResponse(201, { category: newCategory }));
   } catch (error) {
     console.log("addCategory error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 
@@ -55,7 +55,7 @@ const getAllCategories = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { categories }));
   } catch (error) {
     console.log("getAllCategories error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(error.statusCode, error.message);
   }
 };
 

@@ -1,92 +1,209 @@
-# Inkwell – Blog Publishing API with Admin Approval Flow
+# Inkwell – Blog Publishing API with Admin Approval Flow 🚀
 
-## Description
+[![Node.js CI](https://img.shields.io/github/actions/workflow/status/yourusername/inkwell/ci.yml)](https://github.com/yourusername/inkwell/actions)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-### 🔍 Description
+---
 
-Inkwell is a REST API for a blogging platform where users can write blog posts, but the posts must be approved by an admin before being published.
+**This is submition for [Masterji](https://www.masterji.co/) project [challenge](https://www.masterji.co/project/31243610-f388-4693-a7e6-56f4226935c9).**
 
-This project aims to content moderation, approval workflows, and user roles (admin vs regular user).
+## 📚 Overview
 
-## 🎯 End Goal
+**Inkwell** is your go-to, production-ready REST API for a modern blogging platform. Built with Express.js and MongoDB, it packs:
 
-- Fully working Express.js API to create, review, approve, and publish blog posts
+- ✨ Robust admin-approval moderation
+- 🔒 JWT + API-Key security
+- 👥 Role-based access (Admin vs User)
+- 🧩 Modular, maintainable architecture
+- 📬 Email-driven password resets
+- 🐱‍🏍 Rate limiting & error handling
 
-- Role-based auth (user vs admin)
-- JWT authentication + API Key system
-- Proper CRUD for blog posts and categories
-- Modular production-ready code
+---
 
-## 📊 Tables
+## ✨ Features
 
-- users
-- api_keys
-- posts
-- categories
-- post_reviews ( audit trail)
-- comments ( comments system)
+- 🔐 **User Registration & Login** (JWT)
+- 🛡️ **API Key System** for every protected route
+- 👮‍♀️ **Role-Based Access Control** (admin / user)
+- 📝 **Blog Post Workflow**: draft → pending → approved/rejected → publish
+- 📋 **Admin Approval Flow**: only approved posts go live
+- 🗂️ **Categories**: CRUD with admin-only creation
+- 💬 **Comments**: nested comments on posts
+- 📜 **Audit Trail** in `post_reviews` for all admin actions
+- 🌐 **Slug-based URLs** for SEO
+- 🛑 **Rate Limiting** to prevent abuse
+- ✅ **Comprehensive Error Handling**
+- 📬 **Postman Collection** for “one-click” testing
+- 📊 **ER Diagram & Workflow** on Eraser.io
 
-## 🧾 API Routes to Build
+---
 
-### 🔐 Auth & API Key:
+## 🗂️ Database Models
 
-- POST /auth/register → Register as regular user
-- POST /auth/login → Login with credentials
-- POST /auth/api-key → Generate API key
-- GET /auth/me → Get current user details
+| Collection       | Description                                                                |
+| ---------------- | -------------------------------------------------------------------------- |
+| **users**        | Accounts, roles, API keys, password reset tokens                           |
+| **api_keys**     | API key details per user                                                   |
+| **posts**        | Blog posts with status (`pending`/`approved`/`rejected`), author, category |
+| **categories**   | Post categories                                                            |
+| **post_reviews** | Audit trail of approvals/rejections                                        |
+| **comments**     | Comments and replies on posts                                              |
 
-manual DB update for admin role.
+---
 
-## 📝 Post Routes:
+## 🚀 Getting Started
 
-- POST /posts → Create a blog post (default status: “pending”)
-- GET /posts → List published posts (public)
-- GET /posts/:id → View published post
-- PUT /posts/:id → Edit a post (only by author, if not approved)
-- DELETE /posts/:id → Delete a post (only by author, if not approved)
+### 1. Clone the Repo
 
-### 🔎 Admin Post Review Routes:
+```bash
+git clone https://github.com/yourusername/inkwell.git
+cd inkwell
+```
 
-- GET /admin/posts → List all pending posts
-- PUT /admin/posts/:id/approve → Approve a post
-- PUT /admin/posts/:id/reject → Reject with optional comment
-- Admin routes are protected by both JWT + Role check middleware
+### 2. Install Dependencies
 
-### 🏷️ Category Routes:
+```bash
+npm install
+```
 
-- POST /categories → Add a new category (admin)
-- GET /categories → List all categories
+### 3. Configure Environment Variables
 
-### 🛡️ Security
+Create a `.env` in the project root:
 
-- JWT auth for all private routes
-- Role-based authorization for admin-only actions
-- API key required for all routes except login/register
+```ini
+PORT=5000
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRE=1d
+NODE_ENV=development
+RATE_LIMIT_WINDOW=15
+RATE_LIMIT_MAX=100
+```
 
-### 🔄 Status Flow
+### 4. Run Locally
 
-Blog post has a status field:
+```bash
+npm run dev
+```
 
-- `pending (default)`
-- `approved`
-- `rejected`
+Visit `http://localhost:5000` to get started! 🎉
 
-  `Only approved posts are public. Rejected posts can be edited and resubmitted`
+---
 
-### 🧠 Additional Features
+## 🧾 Postman Collection
 
-- Add post_reviews table to log admin actions with timestamps
-- Comments system (comments table with user + post)
-- Slug-based URLs (/posts/my-first-post)
-- Public endpoint for featured posts
-- Rate limiting or spam protection
+We’ve built a comprehensive Postman collection to help you explore and test every endpoint with the correct workflow:
 
-## ✅ Deliverables Checklist
+### Option 1: Import JSON File
 
-- JWT auth + API Key system
-- Role-based access (admin vs user)
-- Blog post workflow (create → approve/reject)
-- CRUD for posts & categories
-- Middleware (JWT, role check, API key)
-- DB structure + relationships
-- Bonus (comments, slugs, reviews, rate limit)
+1. Download the JSON file:
+   `postman/inkwell.postman_collection.json`
+2. Open Postman → **Import** → **File** → select the JSON.
+3. Choose your environment (development / production).
+4. Voilà! Ready to send requests. 📬
+
+### Option 2: Join via Invite Link
+
+1. Click the invite link below:
+   👉 [Join Inkwell Collection in Postman Link 1](https://postman.co/workspace/My-Workspace~f6d6ce75-df74-44aa-8655-3441d243162c/collection/23349780-f930f7d3-17a8-4619-9a69-1acdcb7f0214?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
+   [or Link 2](https://.postman.co/workspace/My-Workspace~f6d6ce75-df74-44aa-8655-3441d243162c/collection/23349780-f930f7d3-17a8-4619-9a69-1acdcb7f0214?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
+   [Environments Link](https://.postman.co/workspace/My-Workspace~f6d6ce75-df74-44aa-8655-3441d243162c/environment/23349780-34f50016-cac5-41c5-b5a9-f370c647bd49?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
+2. Accept the invitation.
+3. Pick your environment and you’re all set! ✅
+
+> 📖 **Note:** Detailed documentation—including flow examples, schema diagrams, and request sequences—is embedded within the collection. Check out the “README” folder in Postman for step-by-step guides.
+
+---
+
+## 🧩 ER Diagram & Workflow
+
+Visualize the data models, controllers, and middleware flow in detail on Eraser.io:
+
+🔗 [View Schema & Workflow on Eraser.io](https://app.eraser.io/workspace/0Nt11I3QkeSAdT7expEw?origin=share)
+
+---
+
+## 🧑‍💻 Usage & Endpoints
+
+> See the Postman collection for **full** examples and expected responses!
+
+### Authentication & API Keys
+
+| Method | Endpoint                | Description                          |
+| ------ | ----------------------- | ------------------------------------ |
+| POST   | `/api/v1/auth/register` | Register new user                    |
+| POST   | `/api/v1/auth/login`    | Login and receive JWT                |
+| GET    | `/api/v1/auth/api-key`  | Generate API Key (JWT required)      |
+| GET    | `/api/v1/auth/me`       | Get profile (JWT + API-Key required) |
+
+### User Posts
+
+| Method | Endpoint               | Description                           |
+| ------ | ---------------------- | ------------------------------------- |
+| POST   | `/api/v1/me/posts`     | Create a new post                     |
+| GET    | `/api/v1/me/posts`     | List your posts                       |
+| PUT    | `/api/v1/me/posts/:id` | Edit own post (pending/rejected only) |
+| DELETE | `/api/v1/me/posts/:id` | Delete own post (pending/rejected)    |
+
+### Public Posts & Comments
+
+| Method | Endpoint                        | Description                 |
+| ------ | ------------------------------- | --------------------------- |
+| GET    | `/api/v1/posts`                 | List all approved posts     |
+| GET    | `/api/v1/posts/:slug`           | Get one post by slug        |
+| POST   | `/api/v1/me/posts/:id/comments` | Comment on a published post |
+
+### Admin Review
+
+| Method | Endpoint                          | Description                  |
+| ------ | --------------------------------- | ---------------------------- |
+| GET    | `/api/v1/admin/posts/pending`     | List all pending posts       |
+| POST   | `/api/v1/admin/posts/:id/approve` | Approve a post               |
+| POST   | `/api/v1/admin/posts/:id/reject`  | Reject a post (with comment) |
+| POST   | `/api/v1/categories`              | Create a new category        |
+| GET    | `/api/v1/categories`              | List all categories          |
+
+### Utility
+
+| Method | Endpoint               | Description         |
+| ------ | ---------------------- | ------------------- |
+| GET    | `/api/v1/health-check` | Check server status |
+
+---
+
+## 🤝 Contributing & Feedback
+
+We ❤️ open source! Feel free to:
+
+- 🐛 **Report Issues** on GitHub
+- 💡 **Suggest Features** via issues or discussions
+- 🚀 **Submit a PR**—we’ll review and merge promptly!
+
+Your contributions make Inkwell better! 🙏
+
+---
+
+## 🧩 License
+
+Distributed under the **ISC License**. See [LICENSE](LICENSE) for details.
+
+---
+
+## 🙋‍♂️ Need Help?
+
+If anything’s unclear, or you hit a snag:
+
+- Open an issue in this repo
+- Ping me at [`pranavbagalofficial@gmail.com`](mailto:pranavbagalofficial@gmail.com)
+
+W's in the chat! ✍️📢
+
+Project from masterji.co
+
+## 🙌 Acknowledgements
+
+Special thanks to:
+
+- [Chai code](https://www.chaicode.com/) hitesh chaudhary
+- [web dev cohort](https://courses.chaicode.com/learn/batch/Web-Dev-Cohort) for support and resources
+- [masterji](https://www.masterji.co/) for project inspiration.

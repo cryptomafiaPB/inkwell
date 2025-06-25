@@ -1,0 +1,769 @@
+{
+	"info": {
+		"_postman_id": "f930f7d3-17a8-4619-9a69-1acdcb7f0214",
+		"name": "InkWell",
+		"description": "## Inkwell – Blog Publishing API with Admin Approval Flow\n\n**Environment:** InkWell Dev Env\n\n### Overview\n\nThis Postman collection covers the full Inkwell REST API lifecycle:\n\n- **User authentication:** register, login, retrieve JWT\n    \n- **API Key management:** generate & use API keys\n    \n- **Blog posts:** create, read, update, delete as author\n    \n- **Admin review:** list pending posts, approve/reject with comments\n    \n- **Categories:** add and list categories\n    \n- **Comments:** add and list comments on posts\n    \n\nIt demonstrates role‑based access (User vs Admin), JWT authentication, API key protection, and the approval workflow.\n\n---\n\n### Environment Variables\n\n| Variable | Description |\n| --- | --- |\n| `base_url` | API root (e.g. `http://localhost:3000`) |\n| `user_email` | Registered user email (populated on register) |\n| `jwt_token` | JWT returned by login |\n| `api_key` | API key returned by `/auth/api-key` |\n| `post_id` | ID of the post under test |\n| `comment_id` | ID of the comment on a post |\n| `category_id` | ID of the category |\n| `user_id` | Logged in user ID |\n\n---\n\n### Folder / Request Structure\n\n1. **00 🔐 Auth & API‑Key**\n    \n    - **Register:** `POST /auth/register`\n        \n    - **Login:** `POST /auth/login`\n        \n    - **Generate API Key:** `POST /auth/api-key`\n        \n2. **01 📝 Posts (User)**\n    \n    - **Create Post:** `POST /me/posts`\n        \n    - **List Published Posts:** `GET /me/posts`\n        \n    - **Get Post:** `GET /me/posts/:id`\n        \n    - **Update Post:** `PUT /me/posts/:id`\n        \n    - **Delete Post:** `DELETE /me/posts/:id`\n        \n3. **02 🔎 Admin Review**\n    \n    - **List Pending:** `GET /admin/posts`\n        \n    - **Approve Post:** `PUT /admin/posts/:id/approve`\n        \n    - **Reject Post:** `PUT /admin/posts/:id/reject`\n        \n4. **03 🏷️ Categories**\n    \n    - **Add Category:** `POST /categories`\n        \n    - **List Categories:** `GET /categories`\n        \n5. **04 💬 Comments**\n    \n    - **Add Comment:** `POST /me/posts/:id/comments`\n        \n    - **Get Comments:** `GET /me/posts/:id/comments`\n        \n\n---\n\n### Security & Headers\n\n(Make sure your passing JWT and API Key)\n\n- **JWT**: Use header `Authorization: Bearer {{jwt_token}}` on all protected routes\n    \n- **API Key**: Use header `x-api-key: {{api_key}}` on all routes except `/auth/register` and `/auth/login`\n    \n\n---\n\n### Workflow description\n\n1. **User registers** → capture `user_email`\n    \n2. **User logs in** → capture `jwt_token`\n    \n3. **User generates API key** → capture `api_key`\n    \n4. **User creates a post** → capture `post_id`\n    \n5. **Admin lists pending** → sees the new post\n    \n6. **Admin approves** → post status changes to `approved`\n    \n7. **User lists published posts** → receives the approved post\n    \n8. **User adds a comment** → capture `comment_id`\n    \n9. **User retrieves comments** → sees the newly added comment\n    \n\n---\n\n### 🧪 **Postman Testing Workflow: User Role**\n\n#### **1\\. Register User**\n\n- **POST** `/api/v1/auth/register`\n    \n- **Body (JSON):**\n    \n\n``` json\n{  \n  \"fullname\": \"Test User\",\n  \"email\": \"user1@example.com\",\n  \"password\": \"UserPass123\",\n  \"username\": \"user1\",\n  \"role\": \"user\"\n}\n\n ```\n\n#### 2\\. **Login User**\n\n- **POST** `/api/v1/auth/login`\n    \n- **Body (JSON):**\n    \n\n``` json\n{  \n  \"email\": \"user1@example.com\",\n  \"password\": \"UserPass123\"\n}\n\n ```\n\n- **Save** the returned JWT token.\n    \n\n#### 3\\. **Generate API Key**\n\n- **GET** `/api/v1/auth/api-key`\n    \n- **Headers:**\n    \n    - `Authorization: Bearer`\n        \n- **Save** the returned API key.\n    \n\n#### 4\\. **Get Current User**\n\n- **GET** `/api/v1/auth/me`\n    \n- **Headers:**\n    \n    - `Authorization: Bearer`\n        \n    - `x-api-key:`\n        \n\n#### 5\\. **Create a Post**\n\n- **POST** `/api/v1/me/posts`\n    \n- **Headers:**\n    \n    - `Authorization: Bearer`\n        \n    - `x-api-key:`\n        \n\n``` json\n{\n  \"title\": \"My First Post\",\n  \"content\": \"This is a test post.\",\n  \"category\": \"<category_id>\"\n}\n\n ```\n\n- _(If no categories exist, skip category or create one as admin first.)_\n    \n\n#### 6\\. **List Approved Posts**\n\n- **GET** `/api/v1/me/posts`\n    \n- **Headers:** (same as above)\n    \n\n#### 7\\. **Edit a Rejected Post (Author only)**\n\n- **PUT** `/api/v1/me/posts/{postId}`\n    \n- **Headers:** (same as above)\n    \n- **Body:** (update content/title)\n    \n\n#### 8\\. **Delete a Pending Post (Author only)**\n\n- **DELETE** `/api/v1/me/posts/{postId}`\n    \n- **Headers:** (same as above)\n    \n\n#### 9\\. **Add Comment to a Published Post**\n\n- **POST** `/api/v1/me/posts/{postId}/comments`\n    \n- **Headers:** (same as above)\n    \n- **Body:**\n    \n\n``` json\n{\n  \"content\": \"Nice post!\",\n  \"user\": \"{{user_id}}\"\n}\n\n ```\n\n---\n\n### 🧪 **Postman Testing Workflow: Admin Role**\n\n#### 1\\. **Register Admin**\n\n- **POST** `/api/v1/auth/register`\n    \n- **Body (JSON):**\n    \n\n``` json\n{\n  \"fullname\": \"Admin User\",\n  \"email\": \"admin1@example.com\",\n  \"password\": \"AdminPass123\",\n  \"username\": \"admin1\",\n  \"role\": \"admin\"\n}\n\n ```\n\n#### 2\\. **Login Admin**\n\n- **POST** `/api/v1/auth/login`\n    \n- **Body (JSON):**\n    \n\n``` json\n{\n  \"email\": \"admin1@example.com\",\n  \"password\": \"AdminPass123\"\n}\n\n ```\n\n- **Save** the returned JWT token.\n    \n\n#### 3\\. **Generate API Key**\n\n- **GET** `/api/v1/auth/api-key`\n    \n- **Headers:**\n    \n    - `Authorization: Bearer`\n        \n- **Save** the returned API key.\n    \n\n#### 4\\. **Get Current Admin**\n\n- **GET** `/api/v1/auth/me`\n    \n- **Headers:** (same as above)\n    \n\n#### 5\\. **Create Category**\n\n- **POST** `/api/v1/categories`\n    \n- **Headers:** (same as above)\n    \n- **Body:**\n    \n\n``` json\n{\n  \"name\": \"General\",\n  \"description\": \"This is a general category, where you will see the post related to general category\"\n}\n\n ```\n\n#### 6\\. **List All Categories**\n\n- **GET** `/api/v1/categories`\n    \n- **Headers:** (same as above)\n    \n\n#### 7\\. **List Pending Posts**\n\n- **GET** `/api/v1/admin/posts/pending`\n    \n- **Headers:** (same as above)\n    \n\n#### 8\\. **Approve a Post**\n\n- **POST** `/api/v1/admin/posts/{postId}/approve`\n    \n- **Headers:** (same as above)\n    \n\n#### 9\\. **Reject a Post**\n\n- **POST** `/api/v1/admin/posts/{postId}/reject`\n    \n- **Headers:** (same as above)\n    \n- **Body:**\n    \n\n``` json\n{\n  \"comment\": \"Reason for rejection\",\n  \"user\": \"{{user_id}}\"\n}\n\n ```",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23349780"
+	},
+	"item": [
+		{
+			"name": "🔐  auth + API key",
+			"item": [
+				{
+					"name": "register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"201 Created\", () => pm.response.to.have.status(201));\r",
+									"let json = pm.response.json();\r",
+									"pm.expect(json).to.have.property(\"data\");\r",
+									"pm.environment.set(\"user_email\", json.data.user.email);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"motherrussia\",\r\n    \"fullname\": \"Vladimir putin\",\r\n    \"email\": \"putin@ruble.com\",\r\n    \"password\": \"12345678\",\r\n    \"role\": \"user\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/auth/register",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "## Register User Endpoint\n\nThis endpoint allows for the registration of a new user in the system. It accepts user details such as username, full name, email, password, and role, and creates a new user account.\n\n### Request\n\n- **Method**: POST\n    \n- **Endpoint**: `{{base-url}}/auth/register`\n    \n\n#### Request Headers\n\n- `Content-Type`: `application/json` (This header indicates that the request body format is JSON.)\n    \n\n#### Request Body\n\nThe request body must be in JSON format and include the following parameters:\n\n- `username` (string): The desired username for the new account.\n    \n- `fullname` (string): The full name of the user.\n    \n- `email` (string): The email address of the user.\n    \n- `password` (string): The password for the user account.\n    \n- `role` (string) enum: The role assigned to the user can be (\"admin\", \"user\").\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"username\": \"klee\",\n  \"fullname\": \"klee jenson\",\n  \"email\": \"klee@gmail.com\",\n  \"password\": \"12345678\",\n  \"role\": \"admin\"\n}\n\n ```\n\n### Response\n\nThe response will contain information about the success or failure of the registration process. The structure of the response may include:\n\n- `status` (string): Indicates whether the registration was successful or if there was an error.\n    \n- `message` (string): A message providing additional details about the registration process.\n    \n- `userId` (string): The unique identifier for the newly created user (if registration is successful).\n    \n\n**Example Response:**\n\n``` json\n{\n  \"status\": \"success\",\n  \"message\": \"User registered successfully.\",\n  \"userId\": \"12345\"\n}\n\n ```\n\n### Notes\n\n- Ensure that all required fields are provided in the request body.\n    \n- The email must be unique and valid for successful registration.\n    \n- Passwords should adhere to security best practices."
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+									"let json = pm.response.json();\r",
+									"pm.expect(json).to.have.property(\"data\");\r",
+									"pm.expect(json.data).to.have.property(\"token\"); // Added check for token property\r",
+									"console.log(json.data.token);\r",
+									"pm.environment.set(\"jwt_token\", json.data.token);\r",
+									"pm.environment.set(\"user_email\", json.data.user.email);\r",
+									"pm.environment.set(\"user_id\", json.data.user._id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{user_email}}\",\r\n    // \"email\": \"joe@pd.com\",\r\n    \"password\": \"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/auth/login",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "### Login Endpoint\n\nThis endpoint allows users to authenticate and log in to the application. Upon successful authentication, it returns user details along with a token for session management.\n\n#### Request\n\n- **Method**: POST\n    \n- **URL**: `{{base-url}}/auth/login`\n    \n- **Content-Type**: application/json\n    \n\n##### Request Body\n\nThe request body must be a JSON object containing the following parameters:\n\n- **email** (string): The email address of the user attempting to log in.\n    \n- **password** (string): The password associated with the user's account.\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"yourpassword\"\n}\n\n ```\n\n#### Response\n\nOn a successful login, the response will return a JSON object with the following structure:\n\n- **statusCode** (integer): The status code of the response.\n    \n- **data** (object): Contains user information and the authentication token.\n    \n    - **user** (object): Information about the authenticated user.\n        \n        - **_id** (string): The unique identifier for the user.\n            \n        - **fullname** (string): The full name of the user.\n            \n        - **email** (string): The email address of the user.\n            \n        - **username** (string): The username of the user.\n            \n        - **avatar** (object): Contains avatar details.\n            \n            - **url** (string): The URL of the user's avatar.\n                \n            - **localPath** (string): The local path of the user's avatar.\n                \n            - **_id** (string): The unique identifier for the avatar.\n                \n        - **role** (string): The role of the user in the application.\n            \n        - **createdAt** (string): The timestamp when the user was created.\n            \n        - **updatedAt** (string): The timestamp when the user was last updated.\n            \n        - **__v** (integer): Version key for the user document.\n            \n    - **token** (string): The authentication token for the session.\n        \n- **message** (string): A message indicating the result of the login attempt.\n    \n- **success** (boolean): Indicates whether the login was successful.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"statusCode\": 0,\n  \"data\": {\n    \"user\": {\n      \"_id\": \"userId\",\n      \"fullname\": \"User Full Name\",\n      \"email\": \"user@example.com\",\n      \"username\": \"username\",\n      \"avatar\": {\n        \"url\": \"avatarUrl\",\n        \"localPath\": \"localPath\",\n        \"_id\": \"avatarId\"\n      },\n      \"role\": \"userRole\",\n      \"createdAt\": \"timestamp\",\n      \"updatedAt\": \"timestamp\",\n      \"__v\": 0\n    },\n    \"token\": \"authToken\"\n  },\n  \"message\": \"\",\n  \"success\": true\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Generate API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"API key returned\", () => pm.response.to.have.status(201));\r",
+									"let json = pm.response.json();\r",
+									"pm.expect(json).to.have.property(\"data\");\r",
+									"pm.environment.set(\"api_key\", json.data.key);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/auth/api-key",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"auth",
+								"api-key"
+							]
+						},
+						"description": "## API Endpoint: Retrieve API Key\n\n### Description\n\nThis endpoint allows users to retrieve an API key for authentication purposes. It is a simple GET request that does not require any request body. The API key is essential for accessing secured endpoints within the application.\n\n### Request Format\n\n- **Method**: GET\n    \n- **Endpoint**: `{{base-url}}/auth/api-key`\n    \n- **Request Body**: None\n    \n\n### Response Structure\n\nUpon a successful request, the server responds with a JSON object containing the following fields:\n\n- **statusCode**: An integer indicating the status of the request (e.g., `0` for success).\n    \n- **data**: An object that includes:\n    \n    - **key**: A string that holds the retrieved API key.\n        \n- **message**: A string that may contain additional information about the request (can be empty).\n    \n- **success**: A boolean indicating whether the request was successful (`true` for success).\n    \n\n### Example Response\n\n``` json\n{\n  \"statusCode\": 0,\n  \"data\": {\n    \"key\": \"\"\n  },\n  \"message\": \"\",\n  \"success\": true\n}\n\n ```\n\nThis response indicates that the API key has been successfully retrieved and is ready for use in subsequent requests."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📝 Posts",
+			"item": [
+				{
+					"name": "Create Post (Pending)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"201 Created\", () => pm.response.to.have.status(201));\r",
+									"let json = pm.response.json();\r",
+									"pm.expect(json).to.have.property(\"data\");\r",
+									"pm.environment.set(\"post_id\", json.data._id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"The kirana hills\",\r\n  \"content\": \"Escalating Israel-Iran hostilities have sparked global concern, ranging from nuclear disaster fears to hopes for peaceful resolution. Amidst shifting US hegemony and rising isolationism, the best-case scenario, for the world and India, is an internal regime change that makes grudging peace with Israel One can only speculate about the outcome of the current Israel-Iran hostilities. The possibilities range from a nuclear disaster to an unexpectedly non-violent resolution. In this column, one can only venture a guess or two. We have got used to an American hegemon imposing order on the world. The erosion of that hegemony under Trump keeps bringing new and nasty surprises. Indian foreign policy has long hoped for multipolarity instead of the bipolarity of the Cold War and US unipolarity after the Soviet collapse. A messy multipolarity is emerging under Donald Trump but has so far spelt chaos rather than improved flexibility for India.\",\r\n  \"user\": \"{{user_id}}\",\r\n  \"category\": \"{{category_id}}\" // Make sure you pass the category_id\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/me/posts",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"me",
+								"posts"
+							]
+						},
+						"description": "## Create a New Post\n\nThis endpoint allows users to create a new post. Upon successful creation, the post will be associated with the specified user and category.\n\n### Request\n\n**Method:** POST  \n**Endpoint:** `{{base-url}}/me/posts`\n\n**Request Body:**  \nThe request body must be in JSON format and include the following parameters:\n\n- **title** (string): The title of the post.\n    \n- **content** (string): The content of the post.\n    \n- **user** (string): The ID of the user creating the post.\n    \n- **category** (string): The ID of the category under which the post is classified.\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"title\": \"The kirana hills\",\n  \"content\": \"Escalating Israel-Iran hostili ...\",\n  \"user\": \"{{user_id}}\",\n  \"category\": \"{{category_id}}\"\n}\n\n ```\n\n### Response\n\n**Status Code:** 201 Created  \n**Content-Type:** application/json\n\nOn a successful request, the response will contain the following structure:\n\n- **statusCode** (integer): The status code of the response.\n    \n- **data** (object): Contains details about the created post:\n    \n    - **title** (string): The title of the post.\n        \n    - **slug** (string): A URL-friendly version of the title.\n        \n    - **content** (string): The content of the post.\n        \n    - **likes** (integer): The number of likes the post has received.\n        \n    - **dislikes** (integer): The number of dislikes the post has received.\n        \n    - **status** (string): The current status of the post.\n        \n    - **shares_count** (integer): The number of times the post has been shared.\n        \n    - **views_count** (integer): The number of views the post has received.\n        \n    - **user** (string): The ID of the user who created the post.\n        \n    - **category** (string): The ID of the category associated with the post.\n        \n    - **isFeatured** (boolean): Indicates if the post is featured.\n        \n    - **isDeleted** (boolean): Indicates if the post is marked as deleted.\n        \n    - **_id** (string): The unique identifier for the post.\n        \n    - **createdAt** (string): The timestamp when the post was created.\n        \n    - **updatedAt** (string): The timestamp when the post was last updated.\n        \n    - **__v** (integer): The version key for the post.\n        \n- **message** (string): A message related to the response.\n    \n- **success** (boolean): Indicates whether the request was successful.\n    \n\n### Example Response:\n\n``` json\n{\n  \"statusCode\": 0,\n  \"data\": {\n    \"title\": \"\",\n    \"slug\": \"\",\n    \"content\": \"\",\n    \"likes\": 0,\n    \"dislikes\": 0,\n    \"status\": \"\",\n    \"shares_count\": 0,\n    \"views_count\": 0,\n    \"user\": \"\",\n    \"category\": \"\",\n    \"isFeatured\": true,\n    \"isDeleted\": true,\n    \"_id\": \"\",\n    \"createdAt\": \"\",\n    \"updatedAt\": \"\",\n    \"__v\": 0\n  },\n  \"message\": \"\",\n  \"success\": true\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get Approved Posts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 Ok\", () => pm.response.to.have.status(200));\r",
+									"let json = pm.response.json();\r",
+									"pm.test(\"Array response\", () => json.forEach(p => \r",
+									"  pm.expect(p).to.have.property(\"status\", \"approved\")\r",
+									"));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/me/posts",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"me",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Post-By-Id (Approved)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/me/posts/{{post_id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"me",
+								"posts",
+								"{{post_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update By-Id (Author)",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"The big if in the Israel-Iran standoff\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/me/posts/68552a4d2cf3d06afa4daf41",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"me",
+								"posts",
+								"68552a4d2cf3d06afa4daf41"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete By-Id (Author)",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/me/posts/68552a4d2cf3d06afa4daf41",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"me",
+								"posts",
+								"68552a4d2cf3d06afa4daf41"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Featured Post",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_id\": \"{{user_id}}\",\r\n    \"title\": \"Node js, the popular backend server\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base-url}}/me/featured",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"me",
+								"featured"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🔎 Admin Review",
+			"item": [
+				{
+					"name": "get Pending Posts",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/admin/posts",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"admin",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Post-By-Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Approved\", () => pm.response.to.have.status(200));\r",
+									"let json = pm.response.json();\r",
+									"pm.expect(json.data.post).to.have.property(\"status\", \"approved\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/admin/posts/{{post_id}}/approve",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"admin",
+								"posts",
+								"{{post_id}}",
+								"approve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Post-By-Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Rejected\", () => pm.response.to.have.status(200));\r",
+									"let json = pm.response.json();\r",
+									"pm.expect(json.data.post).to.have.property(\"status\", \"rejected\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"comment\": \"Post description is too small, make it bit longer and in brief.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/admin/posts/685527d922dd099f086573f7/reject",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"admin",
+								"posts",
+								"685527d922dd099f086573f7",
+								"reject"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🏷️ Categories",
+			"item": [
+				{
+					"name": "Create-Category (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"201 Created\", () => pm.response.to.have.status(201));\r",
+									"let json = pm.response.json();\r",
+									"pm.expect(json).to.have.property(\"data\");\r",
+									"pm.environment.set(\"category_id\", json.data.category._id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"middle-east\",\r\n    \"description\": \"This the middle-east catrogry where you can find a middle-east related content like oil, wars, tech news, shipping in middle-east\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/categories",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Categories",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/categories",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "💬 Comments",
+			"item": [
+				{
+					"name": "Add Comment",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"American psycho\",\r\n    \"user\": \"{{user_id}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/me/posts/{{post_id}}/comments",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"me",
+								"posts",
+								"{{post_id}}",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Comments by Id",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{api_key}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/me/posts/{{post_id}}/comments",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"me",
+								"posts",
+								"{{post_id}}",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "healthCheck",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/health-check",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"health-check"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,9 +1,8 @@
-# .github/workflows/ci.yml
 name: Node.js CI
 
 on:
   push:
-    branches: [main] # or your default branch
+    branches: [main]
   pull_request:
     branches: [main]
 

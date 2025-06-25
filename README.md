@@ -1,6 +1,9 @@
 # Inkwell – Blog Publishing API with Admin Approval Flow 🚀
 
-[![Node.js CI](https://img.shields.io/github/actions/workflow/status/cryptomafiaPB/inkwell/ci.yml)](https://github.com/cryptomafiaPB/inkwell/actions)
+[![Node.js CI](https://img.shields.io/github/actions/workflow/status/cryptomafiaPB/inkwell/ci.yml?branch=main)](https://github.com/cryptomafiaPB/inkwell/actions)
+[![GitHub issues](https://img.shields.io/github/issues/cryptomafiaPB/inkwell)](https://github.com/cryptomafiaPB/inkwell/issues)
+[![GitHub forks](https://img.shields.io/github/forks/cryptomafiaPB/inkwell)](https://github.com/cryptomafiaPB/inkwell/forks)
+[![GitHub last commit](https://img.shields.io/github/last-commit/cryptomafiaPB/inkwell)](https://github.com/cryptomafiaPB/inkwell/commits/main)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 ---
@@ -186,7 +189,7 @@ Your contributions make Inkwell better! 🙏
 
 ## 🧩 License
 
-Distributed under the **ISC License**. See [LICENSE](LICENSE) for details.
+Distributed under the **ISC License**. See [LICENSE] for details.
 
 ---
 

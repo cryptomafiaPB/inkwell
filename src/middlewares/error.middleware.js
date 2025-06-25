@@ -1,3 +1,4 @@
+import { z } from "zod/v4";
 import { ApiError } from "../utils/api-error.js";
 import mongoose from "mongoose";
 
@@ -6,9 +7,27 @@ import mongoose from "mongoose";
 export function errorHandler(err, req, res, next) {
   let customError = err;
 
-  // Zod validation error
-  if (err.name === "ZodError") {
-    customError = new ApiError(400, "Validation Error", true, err.errors);
+  // Check for Zod validation error inside ApiError or directly
+  let zodError = null;
+
+  // If the error is directly a ZodError
+  if (err instanceof z.ZodError) {
+    zodError = err;
+  }
+  // If the error is an ApiError wrapping a ZodError
+  else if (err instanceof ApiError && err.details instanceof z.ZodError) {
+    zodError = err.details;
+  }
+  // If the error object has an 'error' property that is a ZodError
+  else if (err && err.error instanceof z.ZodError) {
+    zodError = err.error;
+  }
+
+  if (zodError) {
+    // Extract message from ZodError.message
+    const position = zodError.message.search("message");
+    const message = zodError.message.slice(position + 11, -7);
+    customError = new ApiError(400, message, true, zodError.errors);
   }
 
   // Mongoose validation error
@@ -23,8 +42,8 @@ export function errorHandler(err, req, res, next) {
   }
 
   // Mongoose duplicate key error
-  if (err.code && err.code === 11000) {
-    const field = Object.keys(err.keyValue)[0];
+  if (err.message && err.message.includes("duplicate key error")) {
+    const field = Object.keys(err.error.keyValue)[0];
     customError = new ApiError(
       409,
       `Duplicate field: ${field}`,

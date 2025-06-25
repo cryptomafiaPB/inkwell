@@ -61,7 +61,7 @@ const getCommentsById = async (req, res) => {
       .json(new ApiResponse(200, comments, "Comments retrieved successfully"));
   } catch (error) {
     console.error("getCommentsById error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(400, error.message, error);
   }
 };
 

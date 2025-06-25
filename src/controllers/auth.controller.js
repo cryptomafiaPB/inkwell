@@ -49,7 +49,7 @@ const registerUser = async (req, res) => {
       );
   } catch (error) {
     console.log("error in register: ", error);
-    throw new ApiError(error.statusCode, error.message);
+    throw new ApiError(error.statusCode, error.message, error);
   }
 };
 
@@ -95,7 +95,7 @@ const loginUser = async (req, res) => {
       );
   } catch (error) {
     console.log(error);
-    throw new ApiError(error.statusCode, error.message);
+    throw new ApiError(error.statusCode, error.message, error);
   }
 };
 
@@ -145,7 +145,7 @@ const generateAPIKey = async (req, res) => {
       );
   } catch (error) {
     console.log("API key generation failed:", error);
-    throw new ApiError(error.statusCode, error.message);
+    throw new ApiError(error.statusCode, error.message, error, error);
   }
 };
 
@@ -173,7 +173,7 @@ const getMe = async (req, res) => {
       );
   } catch (error) {
     console.log(error);
-    throw new ApiError(error.statusCode, error.message);
+    throw new ApiError(error.statusCode, error.message, error);
   }
 };
 

@@ -6,7 +6,7 @@ const healthCheck = (req, res) => {
     res.status(200).json(new ApiResponse(200, "Healthy"));
   } catch (error) {
     console.error("healthCheck error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(400, error.message, error);
   }
 };
 

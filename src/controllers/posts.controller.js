@@ -41,7 +41,7 @@ const createPost = async (req, res) => {
       .json(new ApiResponse(201, newPost, "Post created successfully"));
   } catch (error) {
     console.error("Error creating post:", error);
-    throw new ApiError(error.statusCode, error.message);
+    throw new ApiError(error.statusCode, error.message, error);
   }
 };
 
@@ -59,7 +59,7 @@ const getAllPosts = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { posts }));
   } catch (error) {
     console.log("getAllPosts error: ", error);
-    throw new ApiError(error.statusCode, error.message);
+    throw new ApiError(error.statusCode, error.message, error);
   }
 };
 
@@ -77,15 +77,13 @@ const getPostById = async (req, res) => {
     const post = await Post.findOne({ _id: id, status: "approved" });
 
     if (!post) {
-      console.log("Post: ", post);
-
-      throw new ApiError(400, "post not found!");
+      throw new ApiError(400, "post not found! Maybe not approved yet?");
     }
 
     throw new ApiResponse(200, { post }, "post successfully found!");
   } catch (error) {
     console.log("getPostById error: ", error);
-    throw new ApiError(400, error.message);
+    throw new ApiError(400, error.message, error);
   }
 };
 
@@ -143,7 +141,7 @@ const updateAutherPostById = async (req, res) => {
       .json(new ApiResponse(200, { post }, "post successfully updated!"));
   } catch (error) {
     console.log("updateAutherPostById error: ", error);
-    throw new ApiError(error.statusCode, error.message);
+    throw new ApiError(error.statusCode, error.message, error);
   }
 };
 
@@ -181,14 +179,13 @@ const deletePostById = async (req, res) => {
     throw new ApiResponse(200, "post successfully deleted!");
   } catch (error) {
     console.log("deletePostById error: ", error);
-    throw new ApiError(error.statusCode, error.message);
+    throw new ApiError(error.statusCode, error.message, error);
   }
 };
 
 // Get featured posts
 const getFeaturedPosts = async (req, res) => {
   try {
-    console.log("getFeaturedPosts called");
     // get all published posts
     const posts = await Post.find({ status: "approved", isFeatured: true });
     if (!posts || posts.length === 0) {
@@ -198,7 +195,7 @@ const getFeaturedPosts = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { posts }));
   } catch (error) {
     console.log("getFeaturedPosts error: ", error);
-    throw new ApiError(error.statusCode, error.message);
+    throw new ApiError(error.statusCode, error.message, error);
   }
 };
 

@@ -1,6 +1,6 @@
 # Inkwell – Blog Publishing API with Admin Approval Flow 🚀
 
-[![Node.js CI](https://img.shields.io/github/actions/workflow/status/yourusername/inkwell/ci.yml)](https://github.com/yourusername/inkwell/actions)
+[![Node.js CI](https://img.shields.io/github/actions/workflow/status/cryptomafiaPB/inkwell/ci.yml)](https://github.com/cryptomafiaPB/inkwell/actions)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 ---

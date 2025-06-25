@@ -15,7 +15,6 @@
 - 🔒 JWT + API-Key security
 - 👥 Role-based access (Admin vs User)
 - 🧩 Modular, maintainable architecture
-- 📬 Email-driven password resets
 - 🐱‍🏍 Rate limiting & error handling
 
 ---
@@ -25,7 +24,7 @@
 - 🔐 **User Registration & Login** (JWT)
 - 🛡️ **API Key System** for every protected route
 - 👮‍♀️ **Role-Based Access Control** (admin / user)
-- 📝 **Blog Post Workflow**: draft → pending → approved/rejected → publish
+- 📝 **Blog Post Workflow**: pending → approved/rejected
 - 📋 **Admin Approval Flow**: only approved posts go live
 - 🗂️ **Categories**: CRUD with admin-only creation
 - 💬 **Comments**: nested comments on posts
@@ -56,7 +55,7 @@
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/yourusername/inkwell.git
+git clone https://github.com/cryptomafiaPB/inkwell.git
 cd inkwell
 ```
 
@@ -92,22 +91,27 @@ Visit `http://localhost:5000` to get started! 🎉
 
 ## 🧾 Postman Collection
 
-We’ve built a comprehensive Postman collection to help you explore and test every endpoint with the correct workflow:
+I’ve built a comprehensive Postman collection to help you explore and test every endpoint with the correct workflow:
 
 ### Option 1: Import JSON File
 
 1. Download the JSON file:
-   `postman/inkwell.postman_collection.json`
+   `postman/InkWell.postman_collection.json
+postman/InkWell Dev Env.postman_environment.json`
+   `
 2. Open Postman → **Import** → **File** → select the JSON.
-3. Choose your environment (development / production).
-4. Voilà! Ready to send requests. 📬
+3. Choose downloaded `InkWell Dev Env.postman_environment.json` environment (development / production).
+4. Ready to send requests. 📬
 
 ### Option 2: Join via Invite Link
 
 1. Click the invite link below:
    👉 [Join Inkwell Collection in Postman Link 1](https://postman.co/workspace/My-Workspace~f6d6ce75-df74-44aa-8655-3441d243162c/collection/23349780-f930f7d3-17a8-4619-9a69-1acdcb7f0214?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
+
    [or Link 2](https://.postman.co/workspace/My-Workspace~f6d6ce75-df74-44aa-8655-3441d243162c/collection/23349780-f930f7d3-17a8-4619-9a69-1acdcb7f0214?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
+
    [Environments Link](https://.postman.co/workspace/My-Workspace~f6d6ce75-df74-44aa-8655-3441d243162c/environment/23349780-34f50016-cac5-41c5-b5a9-f370c647bd49?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
+
 2. Accept the invitation.
 3. Pick your environment and you’re all set! ✅
 
@@ -150,7 +154,7 @@ Visualize the data models, controllers, and middleware flow in detail on Eraser.
 | Method | Endpoint                        | Description                 |
 | ------ | ------------------------------- | --------------------------- |
 | GET    | `/api/v1/posts`                 | List all approved posts     |
-| GET    | `/api/v1/posts/:slug`           | Get one post by slug        |
+| GET    | `/api/v1/posts/:id`             | Get one post by id          |
 | POST   | `/api/v1/me/posts/:id/comments` | Comment on a published post |
 
 ### Admin Review

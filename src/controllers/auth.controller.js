@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 
-import { z } from "zod/v4";
 import { ApiError } from "../utils/api-error.js";
 import User from "../models/users.model.js";
 import { ApiResponse } from "../utils/api-responce.js";
@@ -76,7 +75,7 @@ const loginUser = async (req, res) => {
     const cookieOptions = {
       httpOnly: true,
       secure: false, // in Production set to true
-      sameSite: "lax", // helps with CSRF and cross-site sending, set "strict" for additional security
+      sameSite: "lax", // helps with CSRF and cross-site sending
       maxAge: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
     // remove password and api_keys from user object
@@ -106,11 +105,6 @@ const logoutUser = (req, res) => {
   res.clearCookie("id");
   return res.status(200).json(new ApiResponse(200, {}, "Logout successful"));
 };
-
-// Implement forgotPassword and resetPassword in future if needed
-const forgotPassword = (req, res) => {};
-
-const resetPassword = (req, res) => {};
 
 const generateAPIKey = async (req, res) => {
   try {
@@ -154,7 +148,6 @@ const generateAPIKey = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    console.log("getMe called ", req.user);
     const { id } = req.user;
     // dont include password and api_keys in response
     const user = await User.findById(id);
@@ -168,12 +161,4 @@ const getMe = async (req, res) => {
   }
 };
 
-export {
-  registerUser,
-  loginUser,
-  logoutUser,
-  forgotPassword,
-  resetPassword,
-  generateAPIKey,
-  getMe,
-};
+export { registerUser, loginUser, logoutUser, generateAPIKey, getMe };

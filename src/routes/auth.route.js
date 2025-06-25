@@ -1,12 +1,10 @@
 import { Router } from "express";
 import {
-  // forgotPassword,
   generateAPIKey,
   getMe,
   loginUser,
   logoutUser,
   registerUser,
-  // resetPassword,
 } from "../controllers/auth.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 

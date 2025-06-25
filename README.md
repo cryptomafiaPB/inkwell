@@ -85,8 +85,6 @@ RATE_LIMIT_MAX=100
 npm run dev
 ```
 
-Visit `http://localhost:5000` to get started! 🎉
-
 ---
 
 ## 🧾 Postman Collection
@@ -95,22 +93,21 @@ I’ve built a comprehensive Postman collection to help you explore and test eve
 
 ### Option 1: Import JSON File
 
-1. Download the JSON file:
-   `postman/InkWell.postman_collection.json
-postman/InkWell Dev Env.postman_environment.json`
-   `
-2. Open Postman → **Import** → **File** → select the JSON.
-3. Choose downloaded `InkWell Dev Env.postman_environment.json` environment (development / production).
-4. Ready to send requests. 📬
+1. Download the collection and environment files from the [`postman`](https://github.com/cryptomafiaPB/inkwell/tree/main/postman) folder:
+   - [`InkWell.postman_collection.json`](https://github.com/cryptomafiaPB/inkwell/blob/main/postman/InkWell.postman_collection.json)
+   - [`InkWell Dev Env.postman_environment.json`](https://github.com/cryptomafiaPB/inkwell/blob/main/postman/InkWell%20Dev%20Env.postman_environment.json)
+2. Open Postman → **Import** → **File** → select the JSON files.
+3. Select the imported environment (e.g., "InkWell Dev Env").
+4. Start sending requests!
 
-### Option 2: Join via Invite Link
+### Option 2: Join via Invite Link (RECOMMENDED)
 
 1. Click the invite link below:
-   👉 [Join Inkwell Collection in Postman Link 1](https://postman.co/workspace/My-Workspace~f6d6ce75-df74-44aa-8655-3441d243162c/collection/23349780-f930f7d3-17a8-4619-9a69-1acdcb7f0214?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
+   👉 [Join Inkwell Collection in Postman Link 1](https://app.getpostman.com/join-team?invite_code=8e2f63c3fd8621ec84570382fdc4cb0c08aa9fc3996c287fef074dc1d9f6ea71&target_code=eaf35749c144020a2b65e669251a7f84)
 
-   [or Link 2](https://.postman.co/workspace/My-Workspace~f6d6ce75-df74-44aa-8655-3441d243162c/collection/23349780-f930f7d3-17a8-4619-9a69-1acdcb7f0214?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
+   [or Link 2](https://www.postman.com/warped-capsule-349623/workspace/masterji/collection/23349780-f930f7d3-17a8-4619-9a69-1acdcb7f0214?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
 
-   [Environments Link](https://.postman.co/workspace/My-Workspace~f6d6ce75-df74-44aa-8655-3441d243162c/environment/23349780-34f50016-cac5-41c5-b5a9-f370c647bd49?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
+   [Environments Link](https://www.postman.com/warped-capsule-349623/workspace/masterji/environment/23349780-34f50016-cac5-41c5-b5a9-f370c647bd49?action=share&creator=23349780&active-environment=23349780-34f50016-cac5-41c5-b5a9-f370c647bd49)
 
 2. Accept the invitation.
 3. Pick your environment and you’re all set! ✅

@@ -176,7 +176,9 @@ const deletePostById = async (req, res) => {
 
     await Post.findByIdAndDelete(postId);
 
-    throw new ApiResponse(200, "post successfully deleted!");
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Post deleted successfully"));
   } catch (error) {
     console.log("deletePostById error: ", error);
     throw new ApiError(error.statusCode, error.message, error);
